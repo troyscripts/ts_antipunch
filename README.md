@@ -107,4 +107,6 @@ Wapendetectie: [officiële IsPedArmed-documentatie](https://github.com/citizenfx
 
 Controlnamen: [officiële FiveM-controls](https://docs.fivem.net/docs/game-references/controls/).
 
+https://discord.gg/nTzVy5uMWX
+
 Ontwikkeld door **Troy Scripts**.
