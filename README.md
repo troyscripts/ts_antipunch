@@ -1,6 +1,6 @@
 # Troy Scripts — ts_antipunch
 
-**Versie: 1.8.0** · FiveM · Standalone
+**Versie: 1.8.1** · FiveM · Standalone
 
 Blokkeert schieten en melee zonder de richtknop vast te houden. Slaan met een
 vuurwapen wordt ook tijdens richten geblokkeerd. Tijdens richten te voet kan
@@ -22,6 +22,43 @@ ensure ts_antipunch
 Start de resource met `ensure ts_antipunch`. Start geen tweede kopie daarnaast.
 Bij overstappen vanaf 1.7.1 tijdens het richten kan de oude versie de camera
 achterlaten in first person. Kies dan zelf eenmaal je gewenste camerastand.
+
+## Op GitHub plaatsen
+
+1. Maak een openbare repository `ts_antipunch` onder `troyenrobin-source` met branch `main`.
+2. Upload de **inhoud** van de map `ts_antipunch` naar de hoofdmap van de repository.
+   `fxmanifest.lua` en `version.txt` moeten dus direct bovenaan staan, niet in een extra submap.
+3. Commit de bestanden. Maak desgewenst een release met tag `v1.8.1` en voeg deze installatiezip toe.
+4. Bij downloaden via Code → Download ZIP: hernoem de uitgepakte map naar `ts_antipunch`.
+
+Dit pakket is voorbereid voor bovenstaande repository; er is vanuit dit pakket niets gepubliceerd.
+Gebruik je een andere accountnaam of branch? Pas `Repository` en `Branch` in `Config.UpdateCheck` aan.
+Een GitHub-token is niet nodig voor een openbare repository.
+
+### Updatecontrole
+
+Bij elke start van de resource leest de server één keer `version.txt` van de ingestelde GitHub-branch.
+De lokale versie komt uit `fxmanifest.lua`. Bij een nieuwere versie verschijnt bijvoorbeeld:
+
+```text
+[TroyScripts] [ts_antipunch] Nieuwe versie beschikbaar: 1.8.2 (geinstalleerd: 1.8.1).
+[TroyScripts] [ts_antipunch] Download: https://github.com/troyenrobin-source/ts_antipunch
+```
+
+Er verschijnt ook een melding wanneer de versie actueel is of de controle mislukt.
+Zolang de repository of `version.txt` ontbreekt, kan de controle een HTTP 404 melden.
+Bij netwerkproblemen blijft de resource normaal werken. Na 15 seconden wordt een
+ontbrekend antwoord gemeld; er zijn geen automatische herhaalverzoeken.
+Uitschakelen kan met `Config.UpdateCheck.Enabled = false`.
+De controle installeert niets en voert geen gedownloade code uit.
+
+Bij toekomstige updates: werk eerst alle gewijzigde bestanden en het changelog bij,
+verhoog `version` in `fxmanifest.lua` en zet dezelfde versie in `version.txt`.
+Publiceer alles samen in één commit. Gebruik drie getallen, bijvoorbeeld `1.8.2`;
+`version.txt` is bedoeld voor stabiele versies, niet voor beta-aanduidingen.
+
+De HTTP-controle gebruikt de officiële FiveM-functie
+[PerformHttpRequest](https://docs.fivem.net/docs/scripting-reference/runtimes/lua/functions/PerformHttpRequest/).
 
 ## Instellingen
 
@@ -63,6 +100,15 @@ De oude README gebruikte ten onrechte `DisableWeaponWhip`: de juiste naam is
 - Andere scripts die tegelijk camera of controls afdwingen kunnen blijven botsen.
   Dit is client-side spelbesturing, geen server-side anticheat.
 
+## Changelog — 1.8.1
+
+- Versie verhoogd naar 1.8.1.
+- Eenmalige server-side updatecontrole via GitHub toegevoegd, met downloadlink bij een nieuwere versie.
+- Repository en branch instelbaar via `Config.UpdateCheck`; controle is uit te schakelen.
+- Duidelijke meldingen bij onbereikbare of ongeldige versiegegevens.
+- `version.txt`, `.gitignore`, `.gitattributes` en GitHub-instructies toegevoegd.
+- Combat- en cameragedrag van 1.8.0 behouden.
+
 ## Changelog — 1.8.0
 
 - Door de gebruiker goedgekeurde beta uitgebracht als versie 1.8.0.
@@ -89,6 +135,12 @@ in dit pakket opgenomen.
 
 ## Controle in FiveM
 
+Versie 1.8.1: alle Lua-bestanden zijn op syntaxis gecontroleerd. De updatecontrole
+is met gesimuleerde FiveM-functies getest op versievergelijking, HTTP-fouten,
+ongeldige gegevens, time-out en uitschakelen. De clientlogica is ongewijzigd.
+Deze versie is hier niet op een live FiveM-server getest.
+
+
 Versie 1.8.0 is lokaal gecontroleerd op Lua-syntaxis en met gesimuleerde
 FiveM-functies getest op combat- en cameragedrag. De beta is door de gebruiker
 goedgekeurd. De aangepaste versie is hier niet op een live FiveM-server getest.
@@ -106,7 +158,5 @@ Controleer na het bijwerken:
 Wapendetectie: [officiële IsPedArmed-documentatie](https://github.com/citizenfx/natives/blob/master/WEAPON/IsPedArmed.md).
 
 Controlnamen: [officiële FiveM-controls](https://docs.fivem.net/docs/game-references/controls/).
-
-https://discord.gg/nTzVy5uMWX
 
 Ontwikkeld door **Troy Scripts**.

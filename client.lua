@@ -1,4 +1,4 @@
--- Troy Scripts | ts_antipunch | v1.8.0
+-- Troy Scripts | ts_antipunch | v1.8.1
 
 local cameraOwned = false
 local previousViewMode = nil

@@ -1,4 +1,4 @@
--- Troy Scripts | ts_antipunch | v1.8.0
+-- Troy Scripts | ts_antipunch | v1.8.1
 Config = {}
 
 -- Debugberichten in de F8-console.
@@ -30,3 +30,11 @@ Config.AimControl = 25
 
 -- MainLoopWait en CameraCheckWait zijn vervallen:
 -- combat draait altijd met Wait(0); de algemene camera-failsafe is verwijderd.
+
+-- Eenmalige GitHub-updatecontrole bij het starten van de resource.
+-- Alleen een melding; bestanden worden niet automatisch vervangen.
+Config.UpdateCheck = {
+    Enabled = true,
+    Repository = 'troyenrobin-source/ts_antipunch',
+    Branch = 'main'
+}
