@@ -23,13 +23,7 @@ Start de resource met `ensure ts_antipunch`. Start geen tweede kopie daarnaast.
 Bij overstappen vanaf 1.7.1 tijdens het richten kan de oude versie de camera
 achterlaten in first person. Kies dan zelf eenmaal je gewenste camerastand.
 
-## Op GitHub plaatsen
 
-1. Maak een openbare repository `ts_antipunch` onder `troyscripts` met branch `main`.
-2. Upload de **inhoud** van de map `ts_antipunch` naar de hoofdmap van de repository.
-   `fxmanifest.lua` en `version.txt` moeten dus direct bovenaan staan, niet in een extra submap.
-3. Commit de bestanden. Maak desgewenst een release met tag `v1.8.1` en voeg deze installatiezip toe.
-4. Bij downloaden via Code → Download ZIP: hernoem de uitgepakte map naar `ts_antipunch`.
 
 Repository: [troyscripts/ts_antipunch](https://github.com/troyscripts/ts_antipunch).
 Deze handleiding wijzigen publiceert of installeert geen scriptbestanden.
