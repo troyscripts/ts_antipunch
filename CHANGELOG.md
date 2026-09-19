@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.8.2 — Bridge en gedeeld camerabeheer
+
+- Vereist ts_bridge 0.0.5; client/server controleren versie, API, functies en status.
+- GitHub-updatecontrole via de bridge; repository gecorrigeerd naar troyscripts/ts_antipunch.
+- Gedeeld camerabeheer voorkomt voortijdig herstel bij overlappende aanvragen.
+- First person standaard verplicht; optionele beperking tot vuurwapens in config.
+- Overlijdenscontrole via de bridge; eigen combatblokkeringen blijven elke frame actief.
+- Gerichte pauzes voor camera/noodrem via bridgecontexten; hostage pauzeert alleen de noodrem.
+- Configwaarden valideren, configversiecheck en aanpasbare Nederlandse locales.
+- Documentatie, installatiehandleiding, manifest en version.txt bijgewerkt.
+- Lokaal gesimuleerd getest; geen live FiveM-test.
+
 ## Changelog — 1.8.1
 
 - Versie verhoogd naar 1.8.1.

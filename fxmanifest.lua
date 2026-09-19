@@ -1,11 +1,10 @@
--- Troy Scripts | ts_antipunch | v1.8.1
 fx_version 'cerulean'
 game 'gta5'
-
 author 'Troy Scripts'
-description 'Standalone anti weapon whip, combat control en first-person richten'
-version '1.8.1'
-
-shared_script 'config.lua'
+description 'Anti weapon whip, combatcontrole en first person; vereist ts_bridge 0.0.5'
+version '1.8.2'
+shared_scripts { 'locales/*.lua', 'locale.lua', 'config.lua', 'bridge_check.lua', 'config_check.lua' }
 client_script 'client.lua'
 server_script 'server.lua'
+dependency 'ts_bridge'
+ts_bridge_min_version '0.0.5'

@@ -1,40 +1,30 @@
--- Troy Scripts | ts_antipunch | v1.8.1
+-- Troy Scripts | ts_antipunch 1.8.2 | vereist ts_bridge 0.0.5 en ox_lib
 Config = {}
-
--- Debugberichten in de F8-console.
+Config.Version = '1.8.2' -- configschema; pas eigen waarden in deze nieuwe config aan
+Config.Locale = 'nl'
 Config.Debug = false
 
--- First person tijdens richten te voet. De voertuigcamera blijft ongemoeid.
+-- Op jouw server blijft first person tijdens richten standaard VERPLICHT.
 Config.ForceFirstPerson = true
--- Herstel alleen camerawijzigingen die deze resource zelf heeft uitgevoerd.
--- Een vooraf zelf gekozen first-personstand blijft behouden.
+-- false = bij elke richtknop te voet, inclusief vuisten/messen (bestaand gedrag).
+-- true = uitsluitend als een vuurwapen wordt vastgehouden.
+Config.FirstPersonOnlyFirearms = false
 Config.RestoreCamera = true
--- Terugvalstand: 0 = dichtbij, 1 = gemiddeld, 2 = ver, 4 = first person.
-Config.DefaultCamera = 1
--- Vertraging in milliseconden; combat blijft ondertussen elke frame beschermd.
--- Gebruik een getal >= 0. Bij opnieuw richten vervalt het geplande herstel.
-Config.CameraRestoreDelay = 50
+Config.DefaultCamera = 1 -- 0 = dichtbij, 1 = gemiddeld, 2 = ver, 4 = first person
+Config.CameraRestoreDelay = 50 -- 0 t/m 60000 ms; combat blijft elk frame actief
 
 Config.BlockShootingWithoutAim = true
 Config.BlockMeleeWithoutAim = true
--- Blokkeer slaan met vuurwapens, ook tijdens richten. Herladen blijft mogelijk.
-Config.DisableWeaponMelee = true
--- Extra melee-controls 143, 263 en 264 blokkeren wanneer melee geblokkeerd is.
+Config.DisableWeaponMelee = true -- ook tijdens richten; herladen blijft vrij
 Config.BlockExtraMeleeControls = true
--- Noodrem: breek een toch gestarte melee-actie met een vuurwapen direct af.
--- Dit onderbreekt de actieve ped-taken; zet uit bij animatieconflicten.
-Config.CancelForcedMelee = true
+Config.CancelForcedMelee = true -- noodrem: onderbreekt actieve ped-taken
+-- Respecteer gerichte camerapauses/noodrempauses van andere scripts via ts_bridge.
+-- ts_hostage pauzeert alleen de noodrem; first person blijft daarbij verplicht.
+Config.RespectCombatContexts = true
+Config.AimControl = 25 -- rechtermuisknop / LT; 0 t/m 360
 
--- GTA-control 25: richten, standaard rechtermuisknop / LT op controller.
-Config.AimControl = 25
-
--- MainLoopWait en CameraCheckWait zijn vervallen:
--- combat draait altijd met Wait(0); de algemene camera-failsafe is verwijderd.
-
--- Eenmalige GitHub-updatecontrole bij het starten van de resource.
--- Alleen een melding; bestanden worden niet automatisch vervangen.
 Config.UpdateCheck = {
     Enabled = true,
-    Repository = 'troyenrobin-source/ts_antipunch',
+    Repository = 'troyscripts/ts_antipunch',
     Branch = 'main'
 }

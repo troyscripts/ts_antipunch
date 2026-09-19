@@ -1,55 +1,27 @@
--- Troy Scripts | ts_antipunch | v1.8.1
-
-local cameraOwned = false
-local previousViewMode = nil
-local restoreAt = nil
-local lastPed = nil
-local aiming = false
-
+-- Troy Scripts | ts_antipunch | 1.8.2
+if not TSBridgeGuard.Await() then return end
+local cameraRequested, lastPed, aiming = false, nil, false
+local context = exports.ts_bridge:GetCombatContext()
 local function DebugPrint(message)
-    if Config.Debug then
-        print(('^3[ts_antipunch DEBUG]^7 %s'):format(message))
-    end
+    if Config.Debug then print(('^3[ts_antipunch DEBUG]^7 %s'):format(message)) end
 end
-
 local function ReleaseCamera(forceRestore)
-    -- Alleen herstellen wanneer deze resource zelf de camera heeft veranderd.
-    if cameraOwned and (forceRestore or Config.RestoreCamera) then
-        -- Een inmiddels gewijzigde camerastand van een ander script respecteren.
-        if GetFollowPedCamViewMode() == 4 then
-            SetFollowPedCamViewMode(previousViewMode or Config.DefaultCamera)
-            DebugPrint('Vorige camera hersteld')
-        end
+    if cameraRequested and GetResourceState('ts_bridge') == 'started' then
+        pcall(function() exports.ts_bridge:ReleaseFirstPerson('aim', forceRestore == true) end)
     end
-    cameraOwned = false
-    previousViewMode = nil
-    restoreAt = nil
+    cameraRequested = false
 end
-
 local function UpdateCamera(shouldForce)
-    if shouldForce then
-        restoreAt = nil
-        local currentView = GetFollowPedCamViewMode()
-        if currentView ~= 4 then
-            if not cameraOwned then
-                previousViewMode = currentView
-                cameraOwned = true
-                DebugPrint(('Camera opgeslagen: %s'):format(currentView))
-            end
-            SetFollowPedCamViewMode(4)
-        end
-    elseif cameraOwned then
-        if not Config.RestoreCamera then
-            ReleaseCamera(false)
-        else
-            restoreAt = restoreAt or (GetGameTimer() + Config.CameraRestoreDelay)
-            if GetGameTimer() >= restoreAt then
-                ReleaseCamera(false)
-            end
-        end
-    end
+    if shouldForce and not cameraRequested then
+        cameraRequested = exports.ts_bridge:RequestFirstPerson('aim', {
+            scope = 'ped', restore = Config.RestoreCamera,
+            restoreDelayMs = Config.CameraRestoreDelay, defaultCamera = Config.DefaultCamera
+        }) == true
+    elseif not shouldForce and cameraRequested then ReleaseCamera(false) end
 end
-
+AddEventHandler('ts_bridge:combatContextChanged', function(value)
+    if type(value) == 'table' then context = value end
+end)
 local function BlockCombat(player, ped, aimPressed, inVehicle)
     if Config.BlockShootingWithoutAim and not aimPressed then
         DisablePlayerFiring(player, true)
@@ -87,50 +59,47 @@ local function BlockCombat(player, ped, aimPressed, inVehicle)
 
     -- Control 45 (herladen) blijft vrij. Alleen daadwerkelijk gestarte
     -- vuurwapen-melee afbreken; gewone vuist-/mesgevechten niet annuleren.
-    if blockWeaponMelee and Config.CancelForcedMelee and IsPedInMeleeCombat(ped) then
+    if blockWeaponMelee and Config.CancelForcedMelee and not (Config.RespectCombatContexts and context.suspendMeleeCancel)
+        and IsPedInMeleeCombat(ped) then
         ClearPedTasksImmediately(ped)
-        DebugPrint('Vuurwapen-melee geannuleerd')
+        DebugPrint(TSL('melee_cancelled'))
     end
 end
 
 CreateThread(function()
     while true do
-        -- Controlblokkeringen moeten elke frame opnieuw worden toegepast.
-        Wait(0)
-        local player = PlayerId()
-        local ped = PlayerPedId()
-        if lastPed ~= ped then
-            ReleaseCamera(true)
-            lastPed = ped
-        end
-
-        if DoesEntityExist(ped) and not IsEntityDead(ped) then
-            local inVehicle = IsPedInAnyVehicle(ped, false)
-            local aimPressed = IsControlPressed(0, Config.AimControl)
-            if inVehicle then
-                aimPressed = aimPressed or IsControlPressed(0, 68) or IsControlPressed(0, 91)
-            end
-            if aimPressed ~= aiming then
-                aiming = aimPressed
-                DebugPrint(aiming and 'Aim gestart' or 'Aim gestopt')
-            end
-
-            -- Combat blijft actief tijdens de cameravertraging.
-            BlockCombat(player, ped, aimPressed, inVehicle)
-            if inVehicle then
-                ReleaseCamera(false)
+        Wait(0) -- controlblokkeringen moeten iedere frame worden toegepast
+        if TSBridgeGuard.IsReady() then
+            local player, ped = PlayerId(), PlayerPedId()
+            if lastPed ~= ped then ReleaseCamera(true); lastPed = ped end
+            if DoesEntityExist(ped) and not exports.ts_bridge:IsDead(ped) then
+                local inVehicle = IsPedInAnyVehicle(ped, false)
+                local aimPressed = IsControlPressed(0, Config.AimControl)
+                if inVehicle then
+                    aimPressed = aimPressed or IsControlPressed(0, 68) or IsControlPressed(0, 91)
+                end
+                if aimPressed ~= aiming then
+                    aiming = aimPressed
+                    DebugPrint(TSL(aiming and 'aim_started' or 'aim_stopped'))
+                end
+                BlockCombat(player, ped, aimPressed, inVehicle)
+                local cameraAim = aimPressed
+                -- Een script kan richten blokkeren tijdens een pose; gebruik de knop
+                -- dan alleen voor camerakeuze, nooit om schieten vrij te geven.
+                if not inVehicle then cameraAim = cameraAim or IsDisabledControlPressed(0, Config.AimControl) end
+                UpdateCamera(Config.ForceFirstPerson and cameraAim and not inVehicle
+                    and (not Config.FirstPersonOnlyFirearms or IsPedArmed(ped, 4))
+                    and not (Config.RespectCombatContexts and context.suspendCamera))
             else
-                UpdateCamera(Config.ForceFirstPerson and aimPressed)
+                aiming = false
+                ReleaseCamera(true)
             end
         else
-            aiming = false
             ReleaseCamera(true)
         end
     end
 end)
-
-AddEventHandler('onResourceStop', function(resourceName)
-    if resourceName == GetCurrentResourceName() then
-        ReleaseCamera(true)
-    end
+AddEventHandler('onClientResourceStop', function(name)
+    if name == GetCurrentResourceName() then ReleaseCamera(true) end
 end)
+AddEventHandler('ts_antipunch:bridgeLost', function() ReleaseCamera(true) end)

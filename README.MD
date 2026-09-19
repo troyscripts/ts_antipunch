@@ -1,200 +1,119 @@
 # Troy Scripts — ts_antipunch
 
-**Versie: 1.8.1** · FiveM · Standalone
+**Versie 1.8.2** · FiveM · vereist **ts_bridge 0.0.5 of hoger** en **ox_lib**
 
-Met de standaardinstellingen blokkeert de resource schieten en melee zonder de richtknop vast te houden. Slaan met een
-vuurwapen wordt ook tijdens richten geblokkeerd. Tijdens richten te voet kan
-het script first person afdwingen en daarna de vorige camerastand herstellen.
-Geen ESX, QBCore, database of andere resources nodig.
+Blokkeert schieten en melee zonder richten. Slaan met een vuurwapen wordt ook
+tijdens richten geblokkeerd. First person tijdens richten te voet staat standaard aan.
+De eigen combatlogica heeft geen ESX, inventory of database nodig. Deze versie
+gebruikt wel verplicht ts_bridge; de bridge heeft ox_lib nodig.
 
-## Installatie / bijwerken
+## Bijwerken vanaf 1.8.1
 
-1. Bewaar een backup van je bestaande resource en instellingen.
-2. Stop de bestaande resource met `stop ts_antipunch`.
-3. Vervang de map `ts_antipunch` volledig door de map uit deze zip.
-4. Neem eventuele eigen instellingen over in de **nieuwe** `config.lua`.
-5. Zorg dat in `server.cfg` het volgende staat:
+Dit updatepakket bevat alleen gewijzigde en nieuwe bestanden. Kopieer de inhoud
+van de map `ts_antipunch` over je bestaande resourcemap; verwijder die map niet.
+Maak eerst een backup. Lees `UPDATE-INSTALLATIE.md` voor de gezamenlijke startvolgorde.
+Neem eigen instellingen over in de nieuwe `config.lua` en eigen vertalingen in
+`locales/nl.lua`. Geen oude bestanden verwijderen, geen databasewijziging.
 
 ```cfg
+ensure ox_lib
+ensure ts_bridge
 ensure ts_antipunch
+# Indien aanwezig, met de bijbehorende update:
+ensure ts_hostage
 ```
 
-Start de resource met `ensure ts_antipunch`. Start geen tweede kopie daarnaast.
-Bij overstappen vanaf 1.7.1 tijdens het richten kan de oude versie de camera
-achterlaten in first person. Kies dan zelf eenmaal je gewenste camerastand.
+## First person
 
-
-
-Repository: [troyscripts/ts_antipunch](https://github.com/troyscripts/ts_antipunch).
-Deze handleiding wijzigen publiceert of installeert geen scriptbestanden.
-Gebruik je een andere accountnaam of branch? Pas `Repository` en `Branch` in `Config.UpdateCheck` aan.
-Een GitHub-token is niet nodig voor een openbare repository.
-
-### Updatecontrole
-
-Neem dit blok op in `config.lua`:
+Voor de gewenste verplichte first person op deze server:
 
 ```lua
-Config.UpdateCheck = {
-    Enabled = true,
-    Repository = 'troyscripts/ts_antipunch',
-    Branch = 'main'
-}
+Config.ForceFirstPerson = true
+Config.FirstPersonOnlyFirearms = false
 ```
 
-Ontbreekt `Config.UpdateCheck` in een oude config, dan wordt de controle niet
-uitgevoerd. Een bestaande verwijzing naar de oude GitHub-accountnaam moet je
-zelf aanpassen. `troyscripts` is de accountnaam en `main` is de branch.
-
-De updatecontrole vereist ook `server.lua` en de bijbehorende vermelding in
-`fxmanifest.lua`. Neem bij installatie of bijwerken alle meegeleverde
-resourcebestanden over.
-
-
-Als de controle is ingeschakeld en de configuratie geldig is, leest de server bij elke start één keer `version.txt` van de ingestelde GitHub-branch.
-De lokale versie komt uit `fxmanifest.lua`. Voor deze release bevatten het manifest
-en `version.txt` beide versie `1.8.1`. Een GitHub-release of tag is niet vereist
-voor de controle: de versie wordt uit `version.txt` gelezen. Bij een nieuwere versie verschijnt bijvoorbeeld:
-
-```text
-[TroyScripts] [ts_antipunch] Nieuwe versie beschikbaar: 1.8.2 (geinstalleerd: 1.8.1).
-[TroyScripts] [ts_antipunch] Download: https://github.com/troyscripts/ts_antipunch
-```
-
-Er verschijnt ook een melding wanneer de versie gelijk is aan die op GitHub,
-wanneer je lokale versie nieuwer is of wanneer de controle mislukt.
-Zolang de repository of `version.txt` ontbreekt, kan de controle een HTTP 404 melden.
-Bij netwerkproblemen blijft de resource normaal werken. Na 15 seconden wordt een
-ontbrekend antwoord gemeld; er zijn geen automatische herhaalverzoeken.
-Uitschakelen kan met `Config.UpdateCheck.Enabled = false`.
-De controle installeert niets en voert geen gedownloade code uit.
-
-Bij toekomstige updates: werk eerst alle gewijzigde bestanden en het changelog bij,
-verhoog `version` in `fxmanifest.lua` en zet dezelfde versie in `version.txt`.
-Publiceer alles samen in één commit. Gebruik drie getallen, bijvoorbeeld `1.8.2`;
-`version.txt` is bedoeld voor stabiele versies, niet voor beta-aanduidingen.
-
-De HTTP-controle gebruikt de officiële FiveM-functie
-[PerformHttpRequest](https://docs.fivem.net/docs/scripting-reference/runtimes/lua/functions/PerformHttpRequest/).
+Dit houdt het bestaande gedrag aan: iedere richtknop te voet forceert first person,
+ook met vuisten of messen. Kies `FirstPersonOnlyFirearms = true` om dit uitsluitend
+bij vuurwapens te doen. `ForceFirstPerson = false` schakelt de cameraforcering van
+antipunch uit. De afzonderlijke hostage-camera is instelbaar in de hostage-config.
+Antipunch forceert geen voertuigcamera.
 
 ## Instellingen
 
-Alle onderstaande instellingen staan onder `Config` in `config.lua`.
-
 | Instelling | Standaard | Werking |
 | --- | --- | --- |
-| `Debug` | `false` | Meldingen bij statuswisselingen in F8. |
-| `ForceFirstPerson` | `true` | First person tijdens richten te voet. |
-| `RestoreCamera` | `true` | Herstel de door dit script gewijzigde camera na richten. |
-| `DefaultCamera` | `1` | Terugvalstand: 0 dichtbij, 1 gemiddeld, 2 ver, 4 first person. |
-| `CameraRestoreDelay` | `50` | Cameravertraging in ms, getal vanaf 0. |
-| `BlockShootingWithoutAim` | `true` | Blokkeer schieten zonder richtknop. |
-| `BlockMeleeWithoutAim` | `true` | Blokkeer melee zonder richtknop. |
-| `DisableWeaponMelee` | `true` | Blokkeer melee met vuurwapens, ook tijdens richten. |
-| `BlockExtraMeleeControls` | `true` | Pas extra melee-controls 143, 263 en 264 toe. |
-| `CancelForcedMelee` | `true` | Annuleer toch gestarte vuurwapen-melee door ped-taken direct te stoppen. |
-| `AimControl` | `25` | GTA-richtcontrol; standaard rechtermuisknop / LT. |
-| `UpdateCheck.Enabled` | `true` | Controleer bij starten op een nieuwere versie. |
-| `UpdateCheck.Repository` | `'troyscripts/ts_antipunch'` | GitHub-account en repository. |
-| `UpdateCheck.Branch` | `'main'` | Branch waaruit version.txt wordt gelezen. |
+| `Version` | `'1.8.2'` | Configschema; neem eerst de nieuwe velden over. |
+| `Locale` | `'nl'` | Aanpasbare teksten in `locales`; Nederlands is de terugvaltaal. |
+| `Debug` | `false` | Statusmeldingen in F8. |
+| `ForceFirstPerson` | `true` | First person tijdens richten te voet verplicht. |
+| `FirstPersonOnlyFirearms` | `false` | Optioneel beperken tot vuurwapens. |
+| `RestoreCamera` | `true` | Oorspronkelijke camera herstellen na de laatste aanvraag. |
+| `DefaultCamera` | `1` | Terugval: 0 dichtbij, 1 gemiddeld, 2 ver, 4 first person. |
+| `CameraRestoreDelay` | `50` | Herstelvertraging, 0 t/m 60000 ms. |
+| `BlockShootingWithoutAim` | `true` | Schieten zonder richtknop blokkeren. |
+| `BlockMeleeWithoutAim` | `true` | Melee zonder richtknop blokkeren. |
+| `DisableWeaponMelee` | `true` | Vuurwapen-melee ook tijdens richten blokkeren. |
+| `BlockExtraMeleeControls` | `true` | Extra melee-controls 143, 263 en 264 blokkeren. |
+| `CancelForcedMelee` | `true` | Toch gestarte vuurwapen-melee afbreken door ped-taken te stoppen. |
+| `RespectCombatContexts` | `true` | Gerichte pauzes van camera/noodrem via de bridge respecteren. |
+| `AimControl` | `25` | Richtcontrol: rechtermuisknop / LT; geldig bereik 0 t/m 360. |
+| `UpdateCheck.Enabled` | `true` | Eén centrale GitHub-check per resource-start. |
+| `UpdateCheck.Repository` | `'troyscripts/ts_antipunch'` | Repository voor versie en downloadlink. |
+| `UpdateCheck.Branch` | `'main'` | Branch met `version.txt`. |
 
-`MainLoopWait` en `CameraCheckWait` zijn vervallen. De blokkeringen worden elk
-frame toegepast; er is geen algemene failsafe meer die eigen first person wegdrukt.
-De oude README gebruikte ten onrechte `DisableWeaponWhip`: de juiste naam is
-`DisableWeaponMelee`.
+Ongeldige gameplaywaarden krijgen een veilige standaard met een servermelding.
+Ongeldige update-instellingen schakelen de updatecheck uit of geven een melding van
+de bridge. De configversiecheck meldt een oude config; hij vervangt geen bestand.
 
-## Gedrag en grenzen
+## Samenwerking met ts_hostage 1.1.9
 
-- Normaal herladen (control 45) wordt niet geblokkeerd.
-- Wie al in first person speelt, blijft daarin na het richten.
-- De resource bewaart de vorige camerastand wanneer hij zelf naar first person
-  schakelt. Bij herstel wijzigt hij de camera alleen als die nog in first person
-  staat; een inmiddels gekozen andere stand wordt niet overschreven.
-- Met `RestoreCamera = false` blijft de geforceerde first person na het loslaten
-  behouden en wordt de opgeslagen camerastatus vrijgegeven. Bij stoppen, overlijden
-  of een pedwissel wordt alleen een **nog actieve** eigen camerawijziging hersteld.
-  Dit is dus geen garantie dat first person later alsnog wordt teruggezet wanneer
-  de opgeslagen status al is vrijgegeven.
-- Bij opnieuw richten binnen de herstelvertraging wordt het herstel geannuleerd.
-- De camera in voertuigen wordt niet geforceerd. Voor de schietblokkering tellen
-  in voertuigen ook richtcontrols 68 en 91 mee. Voertuigaanvalscontrols worden
-  uitsluitend door `BlockShootingWithoutAim` geblokkeerd, niet door anti-melee.
-- Richten betekent hier de richtknop ingedrukt houden; er is geen minimale richttijd.
-- Vuisten en echte melee-wapens vallen onder `BlockMeleeWithoutAim`; de permanente
-  wapenmelee-blokkering gebruikt de GTA-detectie voor vuurwapens.
-- `BlockShootingWithoutAim` blokkeert ook de primaire aanvalsknoppen zonder richten.
-  Daardoor kan deze instelling vuist- en mesaanvallen via die knoppen eveneens
-  verhinderen, ook als `BlockMeleeWithoutAim = false` staat.
-- `BlockExtraMeleeControls` werkt alleen wanneer de melee-blokkering actief is.
-  `CancelForcedMelee` grijpt alleen in als vuurwapen-melee wordt geblokkeerd en
-  de speler volgens de game daadwerkelijk in een meleegevecht zit.
-- `CancelForcedMelee` is een noodrem die ped-taken onderbreekt. Test dit met je
-  animatiescripts; zet deze optie uit als de noodrem conflicten veroorzaakt.
-- Andere scripts die tegelijk camera of controls afdwingen kunnen blijven botsen.
-  Dit is client-side spelbesturing, geen server-side anticheat.
+Beide scripts vragen first person aan bij de bridge. Wanneer één script loslaat,
+blijft first person actief zolang het andere script die nog nodig heeft. De bridge
+bewaart de oorspronkelijke camerastand en herstelt deze na de laatste aanvraag.
+Wie vooraf zelf in first person speelde, blijft daarin.
 
-## Changelog — 1.8.1
+Hostage vraagt standaard first person voor de dader aan tijdens een actieve
+sessie. Via `Config.AntipunchCompatibility = true` in hostage pauzeert het tijdelijk
+alleen de antipunch-noodrem die animaties kan afbreken. De normale schiet- en
+slagblokkeringen blijven actief; deze koppeling schakelt first person niet uit.
+Na loslaten/stoppen vervalt de pauze automatisch. Andere animatiescripts kunnen
+op dezelfde manier gericht een pauze aanvragen; zie de bridgehandleiding.
 
-- Versie verhoogd naar 1.8.1.
-- Eenmalige server-side updatecontrole via GitHub toegevoegd, met downloadlink bij een nieuwere versie.
-- Repository en branch instelbaar via `Config.UpdateCheck`; controle is uit te schakelen.
-- Duidelijke meldingen bij onbereikbare of ongeldige versiegegevens.
-- `version.txt`, `.gitignore`, `.gitattributes` en GitHub-instructies toegevoegd.
-- Combat- en cameragedrag van 1.8.0 behouden.
+De cameravertraging blokkeert de combatloop niet. Bij doodgaan, een pedwissel of
+resource-stop ruimt de bridge de actieve aanvragen op. Na een volledige
+bridgeherstart moeten afhankelijke scripts opnieuw worden gestart.
 
-## Changelog — 1.8.0
+Bij overlappende cameraverzoeken wordt hersteld zodra de laatste loslaat als
+minstens één deelnemer herstel heeft aangevraagd. Met alleen `RestoreCamera = false`
+blijft first person na normale vrijgave behouden. Een actieve aanvraag wordt bij
+stoppen/overlijden wel opgeruimd met herstel. Andere scripts die rechtstreeks de
+camera overschrijven kunnen nog conflicten veroorzaken.
 
-- Door de gebruiker goedgekeurde beta uitgebracht als versie 1.8.0.
-- Melee via de primaire aanvalsknop wordt nu ook geblokkeerd wanneer
-  `BlockShootingWithoutAim = false` en `BlockMeleeWithoutAim = true`.
-  Dit geldt te voet met vuisten of een melee-wapen, zonder richten.
-- Bestaande standaardinstellingen behouden.
-- Manifest, broncode en handleiding bijgewerkt.
+## Grenzen
 
-## Changelog — 1.7.5beta
+- Herladen (control 45) blijft vrij.
+- De richtknop bepaalt of schieten is toegestaan; er is geen minimale richttijd.
+- In voertuigen tellen richtcontrols 68 en 91 ook mee.
+- Schieten blokkeren blokkeert de primaire aanvalsknoppen en kan daardoor ook
+  vuist- of mesaanvallen verhinderen als alleen die schietblokkering aanstaat.
+- De melee-noodrem onderbreekt ped-taken. Zet `CancelForcedMelee` uit bij conflicten
+  met scripts die geen combatcontext doorgeven.
+- Dit is clientbesturing, geen server-anticheat.
 
-- Herlaadcontrol 45 verwijderd uit de blokkeringen.
-- Vuurwapen-melee ook tijdens richten geblokkeerd.
-- Voertuigcontrols gescheiden van de melee-instellingen.
-- `BlockExtraMeleeControls` daadwerkelijk aangesloten op de logica.
-- Cameraherstel beperkt tot eigen wijzigingen; vrijwillige first person behouden.
-- Blokkerende `Wait(50)` vervangen door een timer; combat blijft elke frame actief.
-- Opruimen van camerastatus bij resource-stop, overlijden en pedwissel.
-- Tweede cameraloop verwijderd; timinginstellingen aangepast.
-- Manifest, versie en Nederlandse documentatie bijgewerkt; standalone aangeduid.
+## Updatecontrole en publicatie
 
-De aangeleverde vorige versie was 1.7.1; voor 1.7.2 t/m 1.7.4 zijn geen releases
-in dit pakket opgenomen.
+De updatecontrole loopt via `ts_bridge:CheckForUpdates` en leest `version.txt`.
+Bij een hogere versie volgt een downloadlink. Een mislukte netwerkcontrole
+verandert niets aan de gameplay. Er wordt niets automatisch geïnstalleerd.
 
-## Controle in FiveM
+Repository: [troyscripts/ts_antipunch](https://github.com/troyscripts/ts_antipunch).
+Upload de gewijzigde resourcebestanden, inclusief `fxmanifest.lua` en
+`version.txt` met **1.8.2**, samen naar de hoofdmap van die repository.
+De ZIP is geen publicatie op GitHub. Zie `CHANGELOG.md` voor alle wijzigingen.
 
-Versie 1.8.1: alle Lua-bestanden zijn op syntaxis gecontroleerd. De updatecontrole
-is met gesimuleerde FiveM-functies getest op versievergelijking, HTTP-fouten,
-ongeldige gegevens, time-out en uitschakelen. De clientlogica is ongewijzigd.
-Deze versie is hier niet op een live FiveM-server getest.
+## Controle
 
-
-De eerdere releasebeschrijving van 1.8.0 vermeldt Lua-syntaxcontroles en tests
-met gesimuleerde FiveM-functies voor combat- en cameragedrag. De beta is eerder
-door de gebruiker goedgekeurd. Deze README is vergeleken met de lokaal
-beschikbare 1.8.1-code; bij de herschrijving is geen nieuwe live FiveM-test uitgevoerd.
-Controleer na het bijwerken:
-
-1. Herladen met een vuurwapen zonder en met richten.
-2. Schieten zonder richten (geblokkeerd) en tijdens richten (toegestaan).
-3. Slaan met een vuurwapen dicht bij een andere speler, ook tijdens richten.
-4. Vuisten en een mes met en zonder richten.
-5. Vanuit elke camerastand richten en loslaten; eigen first person blijft behouden.
-6. Snel loslaten en opnieuw richten, overlijden en `restart ts_antipunch` tijdens richten.
-7. Richten en schieten als bestuurder/passagier, en je gebruikte voertuigwapens.
-8. Controllerbediening en combinatie met je HUD, inventory en animatiescripts.
-9. De opstartmelding voor 1.8.1 en het resultaat van de GitHub-updatecontrole.
-
-Deze controles gaan uit van de standaardinstellingen. Test bij eigen instellingen
-ook de combinaties van schietblokkering, melee-blokkering en cameraherstel.
-
-Wapendetectie: [officiële IsPedArmed-documentatie](https://github.com/citizenfx/natives/blob/master/WEAPON/IsPedArmed.md).
-
-Controlnamen: [officiële FiveM-controls](https://docs.fivem.net/docs/game-references/controls/).
-
-Ontwikkeld door **Troy Scripts**.
+Lua-syntaxis, configuratievalidatie, bridgecontrole en gedeeld camera-/combatgedrag
+zijn lokaal met gesimuleerde FiveM-functies getest. Geen live FiveM-test uitgevoerd.
+Test op de server herladen, melee, richten met muis/controller, cameraherstel,
+gijzelen en loslaten met twee spelers, voertuigcamera en een resourceherstart.
