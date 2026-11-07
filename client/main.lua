@@ -1,4 +1,4 @@
--- Troy Scripts | ts_antipunch | 1.8.2
+-- Troy Scripts | ts_antipunch | 1.8.3
 if not TSBridgeGuard.Await() then return end
 local cameraRequested, lastPed, aiming = false, nil, false
 local context = exports.ts_bridge:GetCombatContext()

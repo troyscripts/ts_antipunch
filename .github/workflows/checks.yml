@@ -1,0 +1,43 @@
+name: ts_antipunch checks en ZIP
+on: [push, pull_request]
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lua 5.4
+        run: sudo apt-get update && sudo apt-get install -y lua5.4
+      - name: Controleer manifest en mappen
+        run: python3 tests/check_package.py
+      - name: Controleer Lua-syntax
+        run: |
+          set -eu
+          find . -type f -name '*.lua' -print0 | while IFS= read -r -d '' file; do
+            luac5.4 -p "$file"
+          done
+      - name: Bouw complete ts_antipunch ZIP
+        run: |
+          python3 - <<'PYTHON'
+          from pathlib import Path
+          from zipfile import ZipFile, ZIP_DEFLATED
+
+          package = Path('ts_antipunch_1.8.3_compleet.zip')
+          with ZipFile(package, 'w', ZIP_DEFLATED, compresslevel=9) as output:
+              for path in sorted(Path('.').rglob('*')):
+                  if not path.is_file() or path == package:
+                      continue
+                  if '.git' in path.parts or '.github' in path.parts:
+                      continue
+                  output.write(path, 'ts_antipunch/' + path.as_posix())
+          print('Volledige FiveM-resource gebouwd:', package)
+          PYTHON
+      - name: Publiceer complete ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ts_antipunch_1.8.3_compleet
+          path: ts_antipunch_1.8.3_compleet.zip
+          if-no-files-found: error
+          retention-days: 30

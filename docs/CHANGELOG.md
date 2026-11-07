@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.8.3 — 2026-11-07 — Volledige mappenstructuur
+
+- Complete `ts_antipunch`-resource logisch ingedeeld in `config/`, `shared/`, `client/`, `server/`, `locales/` en `docs/`.
+- `fxmanifest.lua` aangepast aan de nieuwe paden, zonder wijziging van de oorspronkelijke laadvolgorde.
+- Hoofdmap opgeschoond: alleen README, manifest en versie plus ondersteunende projectbestanden.
+- README en installatiehandleiding bijgewerkt; oudere installatie- en testdocumenten in `docs/historie/` gezet.
+- GitHub Actions toegevoegd voor manifest-/versie-/Lua-controle en een volledig ZIP-installatiepakket.
+- Gameplay, exports/events, bridge-integratie en configuratie-instellingen ongewijzigd. Scriptversie **1.8.3**, configschema blijft **1.8.2**.
+
 ## 1.8.2 — Bridge en gedeeld camerabeheer
 
 - Vereist ts_bridge 0.0.5; client/server controleren versie, API, functies en status.
