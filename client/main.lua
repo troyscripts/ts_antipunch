@@ -1,6 +1,7 @@
--- Troy Scripts | ts_antipunch | 1.8.3
+-- Troy Scripts | ts_antipunch | 1.8.4
 if not TSBridgeGuard.Await() then return end
 local cameraRequested, lastPed, aiming = false, nil, false
+local meleeCancelledThisEpisode = false
 local context = exports.ts_bridge:GetCombatContext()
 local function DebugPrint(message)
     if Config.Debug then print(('^3[ts_antipunch DEBUG]^7 %s'):format(message)) end
@@ -59,9 +60,20 @@ local function BlockCombat(player, ped, aimPressed, inVehicle)
 
     -- Control 45 (herladen) blijft vrij. Alleen daadwerkelijk gestarte
     -- vuurwapen-melee afbreken; gewone vuist-/mesgevechten niet annuleren.
-    if blockWeaponMelee and Config.CancelForcedMelee and not (Config.RespectCombatContexts and context.suspendMeleeCancel)
-        and IsPedInMeleeCombat(ped) then
-        ClearPedTasksImmediately(ped)
+    -- De controles blijven iedere frame geblokkeerd, maar de noodrem mag niet
+    -- tientallen keren tijdens één melee-animatie alle ped-taken wissen.
+    local meleeActive = IsPedInMeleeCombat(ped)
+    if not meleeActive then meleeCancelledThisEpisode = false end
+    if blockWeaponMelee and Config.CancelForcedMelee and meleeActive
+        and not meleeCancelledThisEpisode and not (Config.RespectCombatContexts and context.suspendMeleeCancel) then
+        meleeCancelledThisEpisode = true
+        if Config.MeleeCancelMode == 'immediate' then
+            -- Optionele legacy-noodrem voor servers waar secondary onvoldoende werkt.
+            ClearPedTasksImmediately(ped)
+        else
+            -- Minder ingrijpend: laat primaire taken/poses zo veel mogelijk intact.
+            ClearPedSecondaryTask(ped)
+        end
         DebugPrint(TSL('melee_cancelled'))
     end
 end
@@ -71,7 +83,11 @@ CreateThread(function()
         Wait(0) -- controlblokkeringen moeten iedere frame worden toegepast
         if TSBridgeGuard.IsReady() then
             local player, ped = PlayerId(), PlayerPedId()
-            if lastPed ~= ped then ReleaseCamera(true); lastPed = ped end
+            if lastPed ~= ped then
+                ReleaseCamera(true)
+                lastPed = ped
+                meleeCancelledThisEpisode = false
+            end
             if DoesEntityExist(ped) and not exports.ts_bridge:IsDead(ped) then
                 local inVehicle = IsPedInAnyVehicle(ped, false)
                 local aimPressed = IsControlPressed(0, Config.AimControl)
@@ -92,9 +108,11 @@ CreateThread(function()
                     and not (Config.RespectCombatContexts and context.suspendCamera))
             else
                 aiming = false
+                meleeCancelledThisEpisode = false
                 ReleaseCamera(true)
             end
         else
+            meleeCancelledThisEpisode = false
             ReleaseCamera(true)
         end
     end

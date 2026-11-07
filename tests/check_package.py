@@ -8,7 +8,7 @@ manifest = (root / "fxmanifest.lua").read_text(encoding="utf-8")
 version = re.search(r"^version\s+['\"]([^'\"]+)['\"]", manifest, re.M)
 assert version, "Geen versie in fxmanifest.lua"
 assert version.group(1) == (root / "version.txt").read_text(encoding="utf-8").strip(), "Versies verschillen"
-assert version.group(1) == "1.8.3", "Onverwachte scriptversie"
+assert version.group(1) == "1.8.4", "Onverwachte scriptversie"
 
 scripts = re.search(r"shared_scripts\s*\{([^}]+)\}", manifest, re.S)
 assert scripts, "shared_scripts ontbreekt"
@@ -30,9 +30,10 @@ assert (root / "server/main.lua").exists()
 
 for old in ("client.lua", "server.lua", "bridge_check.lua", "config_check.lua", "locale.lua", "config.lua", "CHANGELOG.md", "README.MD"):
     assert not (root / old).exists(), f"Oud bestand nog aanwezig: {old}"
-assert "Config.Version = '1.8.2'" in (root / "config/config.lua").read_text(encoding="utf-8")
-assert "originalVersion, '1.8.2'" in (root / "shared/config_check.lua").read_text(encoding="utf-8")
+assert "Config.Version = '1.8.3'" in (root / "config/config.lua").read_text(encoding="utf-8")
+assert "originalVersion, '1.8.3'" in (root / "shared/config_check.lua").read_text(encoding="utf-8")
 assert "GetCombatContext" in (root / "shared/bridge_check.lua").read_text(encoding="utf-8")
+assert "MeleeCancelMode = 'secondary'" in (root / "config/config.lua").read_text(encoding="utf-8")
 assert "CheckForUpdates" in (root / "server/main.lua").read_text(encoding="utf-8")
 assert (root / "docs/INSTALLATIE.md").exists()
 assert (root / "docs/STRUCTUUR.md").exists()

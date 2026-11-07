@@ -1,9 +1,9 @@
 local defaults = {
-    Version = '1.8.2', Locale = 'nl', Debug = false, ForceFirstPerson = true,
+    Version = '1.8.3', Locale = 'nl', Debug = false, ForceFirstPerson = true,
     FirstPersonOnlyFirearms = false, RestoreCamera = true, DefaultCamera = 1,
     CameraRestoreDelay = 50, BlockShootingWithoutAim = true, BlockMeleeWithoutAim = true,
     DisableWeaponMelee = true, BlockExtraMeleeControls = true, CancelForcedMelee = true,
-    RespectCombatContexts = true, AimControl = 25
+    RespectCombatContexts = true, AimControl = 25, MeleeCancelMode = 'secondary'
 }
 if type(Config) ~= 'table' then Config = {} end
 local originalVersion = Config.Version
@@ -15,7 +15,12 @@ for key, default in pairs(defaults) do
         if key == 'DefaultCamera' then valid = valid and (value == 0 or value == 1 or value == 2 or value == 4)
         elseif key == 'AimControl' then valid = valid and value >= 0 and value <= 360
         else valid = valid and value >= 0 and value <= 60000 end
-    elseif type(default) == 'string' then valid = valid and value ~= '' end
+    elseif type(default) == 'string' then
+        valid = valid and value ~= ''
+        if key == 'MeleeCancelMode' then
+            valid = valid and (value == 'secondary' or value == 'immediate')
+        end
+    end
     if not valid then
         Config[key] = default
         if IsDuplicityVersion() then print(TSL('config_invalid', key, tostring(default))) end
@@ -27,4 +32,4 @@ if type(updates) ~= 'table' or type(updates.Enabled) ~= 'boolean'
     Config.UpdateCheck = { Enabled = false }
     if IsDuplicityVersion() then print(TSL('update_invalid')) end
 end
-if TSBridgeGuard.Await() then exports.ts_bridge:CheckConfigVersion(originalVersion, '1.8.2') end
+if TSBridgeGuard.Await() then exports.ts_bridge:CheckConfigVersion(originalVersion, '1.8.3') end
