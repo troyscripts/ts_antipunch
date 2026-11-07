@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.8.4 — 2026-11-07 — Veiliger melee afbreken
+
+- Per melee-episode maximaal één annuleringsactie; normale blokkering van aanvalsknoppen blijft iedere frame actief.
+- Nieuwe `Config.MeleeCancelMode='secondary'` voor minder ingrijpend `ClearPedSecondaryTask`; optionele `'immediate'` bewaart het eerdere noodremgedrag.
+- Herladen, combatcontexts, cameraforcering, resource-/pedwissels en schietbeveiliging blijven werken.
+- Configschema naar `1.8.3` vanwege `MeleeCancelMode`; scriptversie naar `1.8.4`.
+- Lua-regressietest voor eenmaal annuleren, reset bij nieuwe episode en contextpauze.
+
+
 ## 1.8.3 — 2026-11-07 — Volledige mappenstructuur
 
 - Complete `ts_antipunch`-resource logisch ingedeeld in `config/`, `shared/`, `client/`, `server/`, `locales/` en `docs/`.

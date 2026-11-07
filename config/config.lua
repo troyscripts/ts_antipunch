@@ -1,6 +1,6 @@
--- Troy Scripts | ts_antipunch 1.8.2 | vereist ts_bridge 0.0.5 en ox_lib
+-- Troy Scripts | ts_antipunch 1.8.4 | vereist ts_bridge 0.0.5 en ox_lib
 Config = {}
-Config.Version = '1.8.2' -- configschema; pas eigen waarden in deze nieuwe config aan
+Config.Version = '1.8.3' -- configschema; pas eigen waarden in deze nieuwe config aan
 Config.Locale = 'nl'
 Config.Debug = false
 
@@ -17,7 +17,10 @@ Config.BlockShootingWithoutAim = true
 Config.BlockMeleeWithoutAim = true
 Config.DisableWeaponMelee = true -- ook tijdens richten; herladen blijft vrij
 Config.BlockExtraMeleeControls = true
-Config.CancelForcedMelee = true -- noodrem: onderbreekt actieve ped-taken
+Config.CancelForcedMelee = true -- extra noodrem voor vuurwapen-melee
+-- 'secondary' (standaard): beperkt tot secundaire taken, minder kans op poseproblemen.
+-- 'immediate': oudere directe ClearPedTasksImmediately als een server dit nodig heeft.
+Config.MeleeCancelMode = 'secondary'
 -- Respecteer gerichte camerapauses/noodrempauses van andere scripts via ts_bridge.
 -- ts_hostage pauzeert alleen de noodrem; first person blijft daarbij verplicht.
 Config.RespectCombatContexts = true

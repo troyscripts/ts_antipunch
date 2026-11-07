@@ -1,6 +1,6 @@
 # Troy Scripts — ts_antipunch
 
-**Scriptversie 1.8.3** · **configschema 1.8.2** · FiveM · vereist `ts_bridge` (API 1, versie minimaal 0.0.5). De bridge vereist `ox_lib`.
+**Scriptversie 1.8.4** · **configschema 1.8.3** · FiveM · vereist `ts_bridge` (API 1, versie minimaal 0.0.5). De bridge vereist `ox_lib`.
 
 Deze resource blokkeert ongewenst schieten/melee zonder richten, verhindert vuurwapen-melee ook tijdens richten, en dwingt naar wens first person af tijdens richten te voet. Combat- en camerabeheer blijven via `ts_bridge` geïntegreerd.
 
@@ -42,16 +42,23 @@ De bestaande instellingen en **waarden** zijn niet veranderd. `Config.Version` b
 | `BlockMeleeWithoutAim` | `true` | Blokkeert melee zonder richten. |
 | `DisableWeaponMelee` | `true` | Blokkeert slaan met vuurwapens, ook tijdens richten. |
 | `BlockExtraMeleeControls` | `true` | Extra melee-knoppen blokkeren. |
-| `CancelForcedMelee` | `true` | Onderbreekt gestarte vuurwapen-melee. |
+| `CancelForcedMelee` | `true` | Onderbreekt gestarte vuurwapen-melee eenmaal per melee-episode. |
+| `MeleeCancelMode` | `'secondary'` | Minder ingrijpende annulering; kies `'immediate'` voor de oude directe noodrem. |
 | `RespectCombatContexts` | `true` | Respecteert camera-/melee-pauzes van andere scripts via `ts_bridge`. |
 | `AimControl` | `25` | Richtcontrol, rechtermuisknop/LT. |
 | `UpdateCheck.Enabled` | `true` | Controleert op een nieuwe versie via bridge, installeert niets. |
 | `Debug` | `false` | Uitgebreide statusmeldingen in F8. |
 | `Locale` | `'nl'` | Nederlandse meldingen en fallback. |
 
+## Melee-afhandeling vanaf 1.8.4
+
+Melee-aanvalsknoppen worden nog steeds iedere frame geblokkeerd; herladen (control 45) blijft mogelijk. Voor toch gestarte vuurwapen-melee voert de noodrem nu **maximaal één annulering per melee-episode** uit. De standaard `MeleeCancelMode='secondary'` beperkt de annulering tot secundaire taken. Als een andere serverresource toch primaire vuurwapen-melee start, kun je bewust `'immediate'` instellen voor het eerdere gedrag. Test die optie met `ts_hostage` en animatiescripts op de testserver.
+
+Omdat `MeleeCancelMode` nieuw is, is het configschema verhoogd naar `1.8.3`. Neem deze instelling over voordat je `Config.Version` wijzigt.
+
 ## Compatibiliteit
 
-Er zijn **geen** nieuwe exports, events, combatregels, cameraregels of databasewijzigingen toegevoegd. De FiveM-resource blijft `ts_antipunch` heten. De bridge-API, `Config`-velden, updatechecker naar `version.txt`, en bestaande afstemming met `ts_hostage` zijn behouden.
+Er zijn **geen** nieuwe exports, events, cameraregels of databasewijzigingen toegevoegd. Alleen de configurabele melee-noodrem is verfijnd. De FiveM-resource blijft `ts_antipunch` heten. De bridge-API, `Config`-velden, updatechecker naar `version.txt`, en bestaande afstemming met `ts_hostage` zijn behouden.
 
 Dit is clientbesturing, geen server-side anticheat. Reloadcontrol 45 blijft vrij. De cameraverzoeken van `ts_hostage` en `ts_antipunch` kunnen gelijktijdig bestaan; de bridge herstelt de camera na de laatste vrijgave. Scripts die rechtstreeks de native camera overschrijven kunnen nog conflicteren.
 

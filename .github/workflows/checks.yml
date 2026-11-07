@@ -18,13 +18,15 @@ jobs:
           find . -type f -name '*.lua' -print0 | while IFS= read -r -d '' file; do
             luac5.4 -p "$file"
           done
+      - name: Melee regressietest
+        run: lua5.4 tests/melee_spec.lua
       - name: Bouw complete ts_antipunch ZIP
         run: |
           python3 - <<'PYTHON'
           from pathlib import Path
           from zipfile import ZipFile, ZIP_DEFLATED
 
-          package = Path('ts_antipunch_1.8.3_compleet.zip')
+          package = Path('ts_antipunch_1.8.4_compleet.zip')
           with ZipFile(package, 'w', ZIP_DEFLATED, compresslevel=9) as output:
               for path in sorted(Path('.').rglob('*')):
                   if not path.is_file() or path == package:
@@ -37,7 +39,7 @@ jobs:
       - name: Publiceer complete ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: ts_antipunch_1.8.3_compleet
-          path: ts_antipunch_1.8.3_compleet.zip
+          name: ts_antipunch_1.8.4_compleet
+          path: ts_antipunch_1.8.4_compleet.zip
           if-no-files-found: error
           retention-days: 30
